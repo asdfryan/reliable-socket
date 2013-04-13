@@ -1,12 +1,10 @@
-var NormalSocket = require('socket');
- 
+var NormalSocket = require('../engine.io/lib/socket');
+
 module.exports = ReliableSocket;
 
-ReliableSocket.prototype.__proto__ = NormalSocket.prototype;
-
-//ReliableSocket.prototype.onClose = this._receivedCloseEvent;
-
-ReliableSocket.prototype._receivedCloseEvent = funtion (reason, desc) {
-	//edit stuff here
-  
+function ReliableSocket(id, server, transport) {
+  NormalSocket.call(this, id, server, transport);
 }
+
+ReliableSocket.prototype = NormalSocket.prototype;
+
