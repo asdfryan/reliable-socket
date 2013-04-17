@@ -35,11 +35,11 @@ ReliableSocket.prototype.__proto__ = Socket.prototype;
  */
 
 ReliableSocket.prototype.onClose = function(reason, description) {
-	if (reason == 'forced close') {
-		Socket.prototype.onClose.call(this, reason, description);
-	} else {
-		// try to reconnect?
-		// check on status of transport
-		// keep it open?
-	}
+  if (reason == 'forced close') {
+    Socket.prototype.onClose.call(this, reason, description);
+  } else {
+    // try to reconnect?
+    // check on status of transport
+    // keep it open?
+  }
 }
