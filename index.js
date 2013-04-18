@@ -2,7 +2,7 @@
  * Module requirements.
  */
 
-var Socket = require('../engine.io/lib/socket');
+var Socket = require('../engine.io-client/lib/socket');
 
 /**
  * Exports the constructor.
@@ -16,8 +16,8 @@ module.exports = ReliableSocket;
  * @api public.
  */
 
-function ReliableSocket(id, server, transport) {
-  Socket.call(this, id, server, transport);
+function ReliableSocket(uri, opts) {
+  Socket.call(this, uri, opts);
 }
 
 /**
@@ -29,17 +29,23 @@ function ReliableSocket(id, server, transport) {
 ReliableSocket.prototype.__proto__ = Socket.prototype;
 
 /**
- * Overrides onClose to implement reliability layer.
+ * Expose deps for legacy compatibility
+ * and standalone browser access.
+ */
+
+ReliableSocket.ReliableSocket = ReliableSocket;
+
+/**
+ * Overrides setTransport to change onError behavior.
  *
  * @api private
  */
 
-ReliableSocket.prototype.onClose = function(reason, description) {
-  if (reason == 'forced close') {
-    Socket.prototype.onClose.call(this, reason, description);
-  } else {
-    // try to reconnect?
-    // check on status of transport
-    // keep it open?
-  }
+ReliableSocket.prototype.setTransport = function(transport) {
+  var self = this;
+  Socket.prototype.setTransport.call(this, transport);
+  // overwrite the transport.on('error') call
+  transport.on('error', function (e) {
+    self.open();
+  });
 }
