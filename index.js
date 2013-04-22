@@ -2,7 +2,7 @@
  * Module requirements.
  */
 
-var Socket = require('../engine.io-client/lib/socket')
+var Socket = require('./socket')
   , Emitter = require('./emitter');
 
 /**
