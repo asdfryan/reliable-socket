@@ -64,7 +64,6 @@ ReliableSocket.Emitter = Emitter;
 
 ReliableSocket.prototype.setupSocketListeners = function() {
   var self = this;
-  console.log('setupSocketListeners');
   this.socket
     .on('open', function () {
       self.emit('open');
