@@ -20,8 +20,16 @@ module.exports = ReliableSocket;
 function ReliableSocket(uri, opts) {
   if (!(this instanceof ReliableSocket)) return new ReliableSocket(uri, opts);
 
+  opts = opts || {};
+
+  if ('object' == typeof uri) {
+    opts = uri;
+    uri = null;
+  }
+
   this.socket = new Socket(uri, opts);
   this.sessionId = 'asdf';
+  this.reconnectTimeout = opts.timeout || 5000;
 
   this.setupSocketListeners();
 }
@@ -45,8 +53,8 @@ ReliableSocket.protocol = Socket.protocol;
  * and standalone browser access.
  */
 
-ReliableSocket.ReliableSocket = ReliableSocket;
-ReliableSocket.Emitter = require('./emitter');
+ReliableSocket.Socket = ReliableSocket;
+ReliableSocket.Emitter = Emitter;
 
 /**
  * Sets up listeners for underlying Socket events
