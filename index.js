@@ -24,7 +24,6 @@ function ReliableSocket(uri, opts) {
 
   if ('object' == typeof uri) {
     opts = uri;
-    uri = null;
   }
 
   this.socket = new Socket(uri, opts);
