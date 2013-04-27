@@ -2,8 +2,8 @@
  * Module requirements.
  */
 
-var Socket = require('./socket')
-  , Emitter = require('./emitter');
+var Socket = require('../engine.io-client/lib/socket')
+  , Emitter = require('../engine.io-client/lib/emitter');
 
 /**
  * Exports the constructor.
@@ -54,6 +54,10 @@ ReliableSocket.protocol = Socket.protocol;
 
 ReliableSocket.Socket = ReliableSocket;
 ReliableSocket.Emitter = Emitter;
+ReliableSocket.Transport = require('../engine.io-client/lib/transport');
+ReliableSocket.transports = require('../engine.io-client/lib/transports');
+ReliableSocket.util = require('../engine.io-client/lib/util');
+ReliableSocket.parser = require('../engine.io-protocol');
 
 /**
  * Sets up listeners for underlying Socket events
@@ -68,11 +72,13 @@ ReliableSocket.prototype.setupSocketListeners = function() {
       self.emit('open');
     })
     .on('close', function (reason, desc) {
+      console.log('closed');
       self.emit('close', reason, desc);
     })
     .on('error', function (err) {
       // based on the type of error, we should try to reconnect
       // does the following work?
+      console.log('error');
       self.socket.open();
     })
     .on('data', function (data) {
@@ -96,3 +102,7 @@ ReliableSocket.prototype.send = function (msg, fn) {
   this.socket.sendPacket('message', msg, fn);
   return this;
 }
+
+ReliableSocket.prototype.filterUpgrades = function (upgrades) {
+  return this.socket.filterUpgrades(upgrades);
+};
