@@ -2,8 +2,8 @@
  * Module requirements.
  */
 
-var Socket = require('../engine.io-client/lib/socket')
-  , Emitter = require('../engine.io-client/lib/emitter');
+var Socket = require('./socket')
+  , Emitter = require('./emitter');
 
 /**
  * Exports the constructor.
@@ -54,10 +54,10 @@ ReliableSocket.protocol = Socket.protocol;
 
 ReliableSocket.Socket = ReliableSocket;
 ReliableSocket.Emitter = Emitter;
-ReliableSocket.Transport = require('../engine.io-client/lib/transport');
-ReliableSocket.transports = require('../engine.io-client/lib/transports');
-ReliableSocket.util = require('../engine.io-client/lib/util');
-ReliableSocket.parser = require('../engine.io-protocol');
+ReliableSocket.Transport = require('./transport');
+ReliableSocket.transports = require('./transports');
+ReliableSocket.util = require('./util');
+// ReliableSocket.parser = require('../../engine.io-protocol');
 
 /**
  * Sets up listeners for underlying Socket events
@@ -67,6 +67,18 @@ ReliableSocket.parser = require('../engine.io-protocol');
 
 ReliableSocket.prototype.setupSocketListeners = function() {
   var self = this;
+
+  // this.socket.transport
+  //   .on('error', function(err) {
+  //     console.log('triggering ours also');
+  //     self.socket.emit('error', err);
+  //   });
+
+  this.socket.onError = function(err) {
+    console.log('our own version of onError');
+    self.socket.emit('error', err);
+  }
+
   this.socket
     .on('open', function () {
       self.emit('open');
@@ -78,8 +90,13 @@ ReliableSocket.prototype.setupSocketListeners = function() {
     .on('error', function (err) {
       // based on the type of error, we should try to reconnect
       // does the following work?
-      console.log('error');
-      self.socket.open();
+      console.log('intercepted error ' + err);
+      setTimeout(function() {
+        console.log('trying to re-open');
+        // self.socket.open();
+        self.socket.onOpen();
+        self.write('hello, after trying to reopen');
+      }, 2500);
     })
     .on('data', function (data) {
       self.emit('data', data);
